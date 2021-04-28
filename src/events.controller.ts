@@ -1,7 +1,7 @@
 import { Body, HttpCode } from '@nestjs/common';
 import { Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, MoreThan, Repository } from 'typeorm';
 import { CreateEventDto } from './create-event.dto';
 import { Event } from './event.entity';
 import { UpdateEventDto } from './update-event.dto';
@@ -10,10 +10,8 @@ import { UpdateEventDto } from './update-event.dto';
 export class EventsController {
     constructor(
         @InjectRepository(Event)
-        private readonly repo: Repository<Event>)
-        
-        {}
-
+        private readonly repo: Repository<Event>,
+    ) {}
 
     @Get()
     async findAll() {
@@ -22,6 +20,22 @@ export class EventsController {
     @Get(':id')
     async findeOne(@Param('id') id: number) {
         return await this.repo.findOne(id);
+    }
+
+    //practice
+    @Get('/practice')
+    async practice() {
+        return await this.repo.find({
+            select: ['id','description','date'],
+            where: [
+                { id: MoreThan(3), date: new Date('2021-12-12T13:00:00') },
+                { description: Like('%meet%') },
+            ],
+            take: 2,
+            order: {
+                id: 'DESC',
+            },
+        });
     }
 
     @Post()
@@ -36,7 +50,7 @@ export class EventsController {
 
         return await this.repo.save({
             ...input,
-            when: new Date(input.when)
+            when: new Date(input.when),
         });
     }
 
@@ -55,7 +69,11 @@ export class EventsController {
         // return updateEvent;
 
         const event = await this.repo.findOne(id);
-        return await this.repo.save({...event, ...input,when: input.when ? new Date(input.when) : event.when,})
+        return await this.repo.save({
+            ...event,
+            ...input,
+            when: input.when ? new Date(input.when) : event.date,
+        });
     }
 
     @Delete('id')
@@ -66,6 +84,5 @@ export class EventsController {
         const event = await this.repo.findOne(id);
 
         await this.repo.remove(event);
-
     }
 }
