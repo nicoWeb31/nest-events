@@ -1,4 +1,4 @@
-import { Body, HttpCode } from '@nestjs/common';
+import { Body, HttpCode, ValidationPipe } from '@nestjs/common';
 import { Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, MoreThan, Repository } from 'typeorm';
@@ -39,7 +39,7 @@ export class EventsController {
     }
 
     @Post()
-    async create(@Body() input: CreateEventDto) {
+    async create(@Body(ValidationPipe) input: CreateEventDto) {
         // const event = {
         //     ...input,
         //     when: new Date(input.when),
@@ -50,7 +50,7 @@ export class EventsController {
 
         return await this.repo.save({
             ...input,
-            when: new Date(input.when),
+            when: new Date(input.date),
         });
     }
 
@@ -72,7 +72,7 @@ export class EventsController {
         return await this.repo.save({
             ...event,
             ...input,
-            when: input.when ? new Date(input.when) : event.date,
+            when: input.date ? new Date(input.date) : event.date,
         });
     }
 
