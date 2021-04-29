@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
@@ -9,20 +10,21 @@ import { EventsModule } from './events/events.module';
 
 @Module({
     imports: [
+        ConfigModule.forRoot(),//for use env 
         TypeOrmModule.forRoot({
             type: 'postgres',
-            host: '127.0.0.1',
-            port: 5432,
-            username: 'postgres',
-            password: 'example',
-            database: 'nest-events',
+            host: process.env.DB_HOST,
+            port: +process.env.DB_PORT,
+            username: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_BASE,
             entities: [Event],
             synchronize: true,
         }),
-        TypeOrmModule.forFeature([Event]),
+
         EventsModule,
     ],
-    controllers: [AppController, EventsController],
+    controllers: [AppController],
     providers: [AppService],
 })
 export class AppModule {}
