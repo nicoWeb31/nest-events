@@ -26,7 +26,7 @@ export class EventsController {
     @Get('/practice')
     async practice() {
         return await this.repo.find({
-            select: ['id','description','date'],
+            select: ['id', 'description', 'date'],
             where: [
                 { id: MoreThan(3), date: new Date('2021-12-12T13:00:00') },
                 { description: Like('%meet%') },
@@ -39,7 +39,9 @@ export class EventsController {
     }
 
     @Post()
-    async create(@Body(ValidationPipe) input: CreateEventDto) {
+    async create(
+        @Body(new ValidationPipe({ groups: ['create'] })) input: CreateEventDto,
+    ) {
         // const event = {
         //     ...input,
         //     when: new Date(input.when),
@@ -55,7 +57,10 @@ export class EventsController {
     }
 
     @Patch('id')
-    async upade(@Param('id') id: number, @Body() input: UpdateEventDto) {
+    async upade(
+        @Param('id') id: number,
+        @Body(new ValidationPipe({ groups: ['upade'] })) input: UpdateEventDto,
+    ) {
         // const index = this.events.findIndex((ev) => ev.id === id);
 
         // const updateEvent = {

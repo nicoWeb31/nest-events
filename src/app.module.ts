@@ -3,8 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { Event } from './event.entity';
-import { EventsController } from './events.controller';
+import { Event } from './events/event.entity';
+import { EventsController } from './events/events.controller';
+import { EventsModule } from './events/events.module';
 
 @Module({
     imports: [
@@ -19,6 +20,7 @@ import { EventsController } from './events.controller';
             synchronize: true,
         }),
         TypeOrmModule.forFeature([Event]),
+        EventsModule,
     ],
     controllers: [AppController, EventsController],
     providers: [AppService],
